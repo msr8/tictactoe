@@ -1,5 +1,5 @@
-from rich import inspect
 import time as t
+import random as r
 
 
 class TicTacToe:
@@ -51,46 +51,68 @@ class TicTacToe:
 
 
 
-    def get_best_possible_move(self, board=None, turn=None):
-        board = board
+    def minimax(self, board=None, turn=None, return_all:bool=False):
+        """
+        Returns the minimax score of a given board state
+        -1: O wins
+        0:  Tie
+        1:  X wins
+
+        :param return_all: A boolean parameter that determines whether the function should return all
+        the minimax values of the possible moves or just the best one. If set to True, the function
+        returns a dictionary of all the minimax values with the corresponding cell as the key. If set to
+        False, the function returns only the best, defaults to False
+        :type return_all: bool (optional)
+        """
+        board = self.board if not board else board
         turn  = self.turn  if not turn  else turn
         state = self.get_state(board)
-        print(f'[B] {board} {turn}')
+        # print(f'[B] {board} {turn} {state}')
         # t.sleep(1)
 
         # Checks if the game has ended. If it has, return its value
         if state!=None:
             return state
         
-        # If the game has not ended, it will try to get the states of child branches
+        # Gets all empty cells in a board
         cells = self.get_empty_cells(board)
-        # If it is X's (aka max) turn
-        if turn == 'X':
-            value = -2
-            for cell in cells:
-                # Simulate every possible move
-                b2 = board.copy()
-                b2[cell] = 'X'
-                turn = 'O'
-                print(f'[A] {b2} {turn} {cell} {cells}')
-                value = max(value, self.get_best_possible_move(b2, turn))
-        else:
-            value = 2
-            for cell in cells:
-                # Simulate every possible move
-                b2 = board.copy()
-                b2[cell] = 'O'
-                turn = 'X'
-                print(f'[A] {b2} {turn} {cell} {cells}')
-                value = min(value, self.get_best_possible_move(b2, turn))
+        # Simulates all possible moves and notes the minimax values of the boards resulting from said move
+        values = {}
+        for cell in cells:
+            # Makes a copy of the current board and simulates the move
+            b2 = board.copy()
+            b2[cell] = turn
+            # Swaps the turn/player
+            new_turn = 'O' if turn=='X' else 'X'
+            # print(f'[A] {b2} {new_turn} {cell} {cells}')
+            # Notes the minimax value of board resulting from that move
+            minimax_val = self.minimax(b2, new_turn)
+            values[cell] = minimax_val
         
-        return value
+        # If the user wants all the values of the possible moves
+        if return_all:
+            return values
+        # X is max, O is min
+        func  = max if turn=='X' else min
+        return func(values.values())
+    
 
 
+    def play_best_move(self):
+        board = self.board
+        turn = self.turn
 
-            
-            
-
+        # Gets the minimax score that all the moves result in
+        all_moves:dict = self.minimax(return_all=True)
+        # Gets the best possible score
+        func       = max if turn=='X' else min
+        best_score = func(all_moves.values())
+        # Gets the moves that result in that value
+        best_moves = [key for key in all_moves if all_moves[key]==best_score]
+        # Selects a random move from that and plays it
+        self.play(r.choice(best_moves))
+        # print(all_moves)
+        # print(best_moves)
 
 
 
@@ -102,7 +124,7 @@ class TicTacToe:
         print(f'{val(board[3])} | {val(board[4])} | {val(board[5])}')
         print('---------')
         print(f'{val(board[6])} | {val(board[7])} | {val(board[8])}')
-        print(f'({self.get_state()}) | {self.get_empty_cells()} | {self.get_best_possible_move(self.board)}')
+        # print(f'({self.get_state()}) | {self.get_empty_cells()} | {self.minimax(self.board)}')
         print('\n\n')
 
     def play(self, cell:int):
@@ -121,10 +143,41 @@ class TicTacToe:
 
 
 
-board = TicTacToe('X')
-board.board = ['X','O','X','O','O','X',None,None,None]
+# board = TicTacToe('X')
+# board.board = ['X','O','X','O','O','X',None,None,None]
 # board.board = [None] * 9
-# board.board[0] = 'X'
-print(board.turn)
-board.print_board()
+# board.board[4] = 'X'
+# board.board[3] = 'O'
+# print(board.turn)
+# board.print_board()
+# board.play_best_move()
+# board.print_board()
+
+
+game = TicTacToe('X')
+game.play_best_move()
+while game.get_state() == None:
+    game.print_board()
+    move = int(input(f'Enter cell to place {game.turn}: '))
+    # Checks if valid move
+    if not move in game.get_empty_cells():
+        print(game.get_empty_cells())
+        print('\n\n\nBRUH\n\n\n')
+        continue
+    game.play(move)
+
+    # If game has not ended, bot plays its move
+    if game.get_state() == None:
+        game.print_board()
+        game.play_best_move()
+
+
+print('\n\n\n')
+game.print_board()
+state = game.get_state()
+if   state == 0:     print('TIE')
+elif state == 1:     print('X Wins')
+elif state == -1:    print('O Wins')
+    
+
 
