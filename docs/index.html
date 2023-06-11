@@ -20,14 +20,16 @@
         .gameboard-parent {
             height: 80vh;
             display: flex;
-	        flex-direction: column;
+            flex-direction: column;
             justify-content: center;
         }
         .gameboard {
             display: grid;
 	        grid-template: repeat(3, 1fr) / repeat(3, 1fr);
-            width: 30vw;
-            height: 30vw;
+            min-width: 30vw;
+            min-height: 30vw;
+            width: 400px;
+            height: 400px;
             margin: 0 auto; /*To horizontally center the grid on the page */
         }
         .cell {
@@ -40,10 +42,45 @@
             justify-content: center;
             align-items: center;
         }
+
         /* color classes */
-        
+        .winner { color: green; }
         .non-occupied:hover {
             background-color: rgba(255,255,255, 0.3);
+        }
+
+        /* Remove all the outlier borders */
+        #c1 {
+            border-top-width: 0px;
+            border-left-width: 0px;
+            border-top-left-radius: 0px;
+        }
+        #c2 {
+            border-top-width: 0px;
+        }
+        #c3 {
+            border-top-width: 0px;
+            border-right-width: 0px;
+            border-top-right-radius: 0px;
+        }
+        #c4 {
+            border-left-width: 0px;
+        }
+        #c6 {
+            border-right-width: 0px;
+        }
+        #c7 {
+            border-bottom-width: 0px;
+            border-left-width: 0px;
+            border-bottom-left-radius: 0px;
+        }
+        #c8 {
+            border-bottom-width: 0px;
+        }
+        #c9 {
+            border-bottom-width: 0px;
+            border-right-width: 0px;
+            border-bottom-right-radius: 0px;
         }
     </style>
 
@@ -56,26 +93,78 @@
 
     <py-script>
         from docs_main import TicTacToe
-        game = TicTacToe('X')
-        turn = 'X'
-        js.console.log(game.board)
 
+        def restart():
+            global game
+            game = TicTacToe('X')
+            # Empties all the cells and makes them non occupied as well as not a winner
+            for i in range(1,10):
+                elem = Element(f'c{i}')
+                elem.element.innerText = ''
+                elem.add_class('non-occupied')
+                elem.remove_class('winner')
+
+            js.console.log(f'Starting game {game.board}')
+            
     
+        def game_over():
+            '''
+            The `game_over()` function is responsible for checking if the game is over and updating the
+            game board accordingly. It first makes all cells non-clickable by removing the "non-occupied"
+            class from each cell. Then, if the game is not a tie (i.e. if `game.get_state()` returns a
+            non-None value), it checks the winning cells by iterating through all possible winning states
+            and checking if the cells in those states have the same value (either 'X' or 'O'). If a
+            winning state is found, the function adds the "winner" class to the corresponding cells to
+            color them green
+            '''
+            # Makes all cells non clickable
+            for i in range(1,10):
+                elem = Element(f'c{i}')
+                elem.remove_class('non-occupied')
+            # If it isnt a tie, color the cells which won
+            if game.get_state() != None:
+                board = game.board.copy()
+                win_states = [
+                    [0,1,2],
+                    [3,4,5],
+                    [6,7,8],
+                    [0,3,6],
+                    [1,4,7],
+                    [2,5,8],
+                    [0,4,8],
+                    [2,4,6]
+                ]
+                # Check the winning cells
+                for c1,c2,c3 in win_states:
+                    if (board[c1]==board[c2] and board[c2]==board[c3] and board[c1]!=None):
+                        # Colors the winner cells
+                        Element(f'c{c1+1}').add_class('winner')
+                        Element(f'c{c2+1}').add_class('winner')
+                        Element(f'c{c3+1}').add_class('winner')
+
+
         def clicked_cell(cell:str):
+            # Checks if game is over
+            if game.get_state() != None: return
             # Check if the cell isnt occupied
             elem    = Element(cell)
             content = elem.element.innerText
             if content: return
+
             # Changes content of the cell
             elem.element.innerText = game.turn
             # Removes the "non-occupied" class
             elem.remove_class('non-occupied')
             # Plays the turn ingame
             game.play( int(cell[-1]) - 1 )
-
             # Logs the board
             js.console.log(f'{game.board}   |   {game.get_state()}')
+            # Checks if game is over
+            if game.get_state() != None:
+                game_over()
         
+
+        restart()
 
     </py-script>
 </head>
@@ -95,6 +184,8 @@
             <div class="cell non-occupied" id="c9" py-click="clicked_cell('c9')"></div>
         </div>
     </div>
+
+    <button py-click="restart()">Restart</button>
 </body>
 
 
