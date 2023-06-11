@@ -1,15 +1,27 @@
 import time as t
 import random as r
 
+import json
+
 
 class TicTacToe:
-    def __init__(self, turn):
+    def __init__(self, turn, cache:dict={}):
         self.board = [None] * 9
         self.turn  = turn
+        self.cache = cache.copy()
 
 
     def val(self, value):
         return value if value else ' '
+
+    def get_board_string(self, board:list=None, turn:str=None):
+        board = self.board if not board else board
+        turn  = self.turn  if not turn  else turn
+        # print(f'Inside the func, {board}')
+        string  = ''.join([str(i) for i in board])
+        string  = string.replace('None','-')
+        string += turn
+        return string
 
     def get_empty_cells(self, board=None) -> list[dict]:
         board = self.board if not board else board
@@ -66,14 +78,24 @@ class TicTacToe:
         """
         board = self.board if not board else board
         turn  = self.turn  if not turn  else turn
-        state = self.get_state(board)
-        # print(f'[B] {board} {turn} {state}')
-        # t.sleep(1)
+        cache = self.cache
 
+        # Checks cache
+        if not return_all:
+            string = self.get_board_string(board, turn)
+            val    = cache.get(string)
+            # print(f'{string} | {turn} | {val}')
+            if val!=None:   return val
+            # print(f'Cache not found for {string} | {board} {turn} cache.get("{string}"): {val} ({cache.get(string)})')
+            # with open('cache2.json','w') as f:
+            #     json.dump(cache, f, indent=4)
+        
         # Checks if the game has ended. If it has, return its value
+        state = self.get_state(board)
         if state!=None:
             return state
-        
+
+
         # Gets all empty cells in a board
         cells = self.get_empty_cells(board)
         # Simulates all possible moves and notes the minimax values of the boards resulting from said move
@@ -86,20 +108,27 @@ class TicTacToe:
             new_turn = 'O' if turn=='X' else 'X'
             # print(f'[A] {b2} {new_turn} {cell} {cells}')
             # Notes the minimax value of board resulting from that move
-            minimax_val = self.minimax(b2, new_turn)
-            values[cell] = minimax_val
+            minimax_score = self.minimax(b2, new_turn)
+            values[cell] = minimax_score
         
         # If the user wants all the values of the possible moves
         if return_all:
+            # print(f'{board} ({turn}) | {values}')
             return values
+
         # X is max, O is min
-        func  = max if turn=='X' else min
-        return func(values.values())
+        func          = max if turn=='X' else min
+        minimax_score = func(values.values())
+
+        # # Gets a string format of the board
+        # string = self.get_board_string()
+        # # Adds the result to cache
+        # cache[string] = minimax_score
+
+        return minimax_score
     
 
-
-    def play_best_move(self):
-        board = self.board
+    def get_best_move(self):
         turn = self.turn
 
         # Gets the minimax score that all the moves result in
@@ -109,10 +138,12 @@ class TicTacToe:
         best_score = func(all_moves.values())
         # Gets the moves that result in that value
         best_moves = [key for key in all_moves if all_moves[key]==best_score]
-        # Selects a random move from that and plays it
-        self.play(r.choice(best_moves))
-        # print(all_moves)
-        # print(best_moves)
+        # Selects a random move from that and returns it
+        return r.choice(best_moves)
+
+    def play_best_move(self):
+        # Plays the best move
+        self.play(self.get_best_move())
 
 
 
@@ -139,45 +170,41 @@ class TicTacToe:
 
 
 
+if __name__ == '__main__':
+    with open('cache.json') as f:
+        cache = json.load(f)
+
+    game = TicTacToe('X', cache)
+    game.play_best_move()
 
 
-
-
-# board = TicTacToe('X')
-# board.board = ['X','O','X','O','O','X',None,None,None]
-# board.board = [None] * 9
-# board.board[4] = 'X'
-# board.board[3] = 'O'
-# print(board.turn)
-# board.print_board()
-# board.play_best_move()
-# board.print_board()
-
-
-game = TicTacToe('X')
-game.play_best_move()
-while game.get_state() == None:
-    game.print_board()
-    move = int(input(f'Enter cell to place {game.turn}: '))
-    # Checks if valid move
-    if not move in game.get_empty_cells():
-        print(game.get_empty_cells())
-        print('\n\n\nBRUH\n\n\n')
-        continue
-    game.play(move)
-
-    # If game has not ended, bot plays its move
-    if game.get_state() == None:
+    while game.get_state() == None:
         game.print_board()
-        game.play_best_move()
+        move = int(input(f'Enter cell to place {game.turn}: '))
+        # Checks if valid move
+        if not move in game.get_empty_cells():
+            print(game.get_empty_cells())
+            print('\n\n\nBRUH\n\n\n')
+            continue
+        game.play(move)
+
+        # If game has not ended, bot plays its move
+        if game.get_state() == None:
+            game.print_board()
+            game.play_best_move()
 
 
-print('\n\n\n')
-game.print_board()
-state = game.get_state()
-if   state == 0:     print('TIE')
-elif state == 1:     print('X Wins')
-elif state == -1:    print('O Wins')
-    
+    print('\n\n\n')
+    game.print_board()
+    state = game.get_state()
+    if   state == 0:     print('TIE')
+    elif state == 1:     print('X Wins')
+    elif state == -1:    print('O Wins')
+        
+
+
+
+
+
 
 

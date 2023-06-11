@@ -1,0 +1,102 @@
+<html>
+
+<head>
+    <meta name="darkreader-lock">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css"/>
+    <script defer src="https://pyscript.net/latest/pyscript.js"></script> 
+
+    <style>
+        html {
+            background-color: #181a1b;
+            color: white;
+        }
+        /* body {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        } */
+        .gameboard-parent {
+            height: 80vh;
+            display: flex;
+	        flex-direction: column;
+            justify-content: center;
+        }
+        .gameboard {
+            display: grid;
+	        grid-template: repeat(3, 1fr) / repeat(3, 1fr);
+            width: 30vw;
+            height: 30vw;
+            margin: 0 auto; /*To horizontally center the grid on the page */
+        }
+        .cell {
+            font-size: 30;
+            border-color: white;
+            border-width: 3px;
+            border-style: solid;
+            /* Centers the CONTENTS vertically and horizontally */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        /* color classes */
+        
+        .non-occupied:hover {
+            background-color: rgba(255,255,255, 0.3);
+        }
+    </style>
+
+
+    <py-config>
+        [[fetch]]
+        from = "https://raw.githubusercontent.com/msr8/tictactoe/main/docs/docs_main.py"
+        files = ["docs_main.py"]
+    </py-config>
+
+    <py-script>
+        from docs_main import TicTacToe
+        game = TicTacToe('X')
+        turn = 'X'
+        js.console.log(game.board)
+
+    
+        def clicked_cell(cell:str):
+            # Check if the cell isnt occupied
+            elem    = Element(cell)
+            content = elem.element.innerText
+            if content: return
+            # Changes content of the cell
+            elem.element.innerText = game.turn
+            # Removes the "non-occupied" class
+            elem.remove_class('non-occupied')
+            # Plays the turn ingame
+            game.play( int(cell[-1]) - 1 )
+
+            # Logs the board
+            js.console.log(f'{game.board}   |   {game.get_state()}')
+        
+
+    </py-script>
+</head>
+
+
+<body>
+    <div class="gameboard-parent">
+        <div class="gameboard">
+            <div class="cell non-occupied" id="c1" py-click="clicked_cell('c1')"></div>
+            <div class="cell non-occupied" id="c2" py-click="clicked_cell('c2')"></div>
+            <div class="cell non-occupied" id="c3" py-click="clicked_cell('c3')"></div>
+            <div class="cell non-occupied" id="c4" py-click="clicked_cell('c4')"></div>
+            <div class="cell non-occupied" id="c5" py-click="clicked_cell('c5')"></div>
+            <div class="cell non-occupied" id="c6" py-click="clicked_cell('c6')"></div>
+            <div class="cell non-occupied" id="c7" py-click="clicked_cell('c7')"></div>
+            <div class="cell non-occupied" id="c8" py-click="clicked_cell('c8')"></div>
+            <div class="cell non-occupied" id="c9" py-click="clicked_cell('c9')"></div>
+        </div>
+    </div>
+</body>
+
+
+
+</html>
