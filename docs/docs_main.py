@@ -128,8 +128,7 @@ class TicTacToe:
         return minimax_score
     
 
-
-    def play_best_move(self):
+    def get_best_move(self):
         turn = self.turn
 
         # Gets the minimax score that all the moves result in
@@ -139,11 +138,12 @@ class TicTacToe:
         best_score = func(all_moves.values())
         # Gets the moves that result in that value
         best_moves = [key for key in all_moves if all_moves[key]==best_score]
-        # print(f'In func {__name__}, {all_moves} | {func.__name__} | {best_score} | {best_moves}')
-        # Selects a random move from that and plays it
-        self.play(r.choice(best_moves))
-        # print(all_moves)
-        # print(best_moves)
+        # Selects a random move from that and returns it
+        return r.choice(best_moves)
+
+    def play_best_move(self):
+        # Plays the best move
+        self.play(self.get_best_move())
 
 
 
@@ -167,20 +167,6 @@ class TicTacToe:
         else:
             self.board[cell] = player
             self.turn = 'O' if self.turn=='X' else 'X'
-
-
-
-
-
-
-
-
-hi = "okay"
-        
-
-
-
-
 
 
 

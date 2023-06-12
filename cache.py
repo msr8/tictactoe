@@ -50,7 +50,7 @@ for board in tqdm(combinations):
 # game.play_best_move()
 # game.print_board()
 
-with open('cache.json', 'w') as f:
+with open('docs/cache.json', 'w') as f:
     json.dump(cache, f, indent=4)
 
 '''

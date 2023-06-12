@@ -171,7 +171,7 @@ class TicTacToe:
 
 
 if __name__ == '__main__':
-    with open('cache.json') as f:
+    with open('docs/cache.json') as f:
         cache = json.load(f)
 
     game = TicTacToe('X', cache)

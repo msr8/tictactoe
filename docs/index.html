@@ -3,6 +3,7 @@
 <head>
     <meta name="darkreader-lock">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Comfortaa:300">
     <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css"/>
     <script defer src="https://pyscript.net/latest/pyscript.js"></script> 
 
@@ -36,6 +37,9 @@
         }
         .cell {
             font-size: 30;
+            font-size: 6cqw;
+            font-family: Comfortaa;
+            font-weight: 300;
             border-color: white;
             border-width: 3px;
             border-style: solid;
@@ -86,19 +90,26 @@
         }
     </style>
 
-
     <py-config>
         [[fetch]]
-        from = "https://raw.githubusercontent.com/msr8/tictactoe/main/docs/"
-        files = ["docs_main.py"]
+        from = "http://localhost:8000/"
+        # https://raw.githubusercontent.com/msr8/tictactoe/main/docs
+        files = ["docs_main.py", "cache.json"]
     </py-config>
 
     <py-script>
         from docs_main import TicTacToe
+        import json
+
+        def initialise():
+            global cache
+            with open('cache.json') as f:
+                cache = json.load(f)
+            restart()
 
         def restart():
             global game
-            game = TicTacToe('X')
+            game = TicTacToe('X', cache)
             # Empties all the cells and makes them non occupied as well as not a winner
             for i in range(1,10):
                 elem = Element(f'c{i}')
@@ -145,6 +156,27 @@
                         Element(f'c{c3+1}').add_class('winner')
 
 
+        def bot_move():
+            global game
+            # Checks if game is over
+            if game.get_state() != None:
+                return
+            # Gets the best move
+            best_move = game.get_best_move()
+            # Logs it
+            js.console.log(f'Bot thinks best move is {best_move}')
+            # Plays that move on the board
+            elem = Element(f'c{best_move+1}')
+            elem.element.innerText = game.turn
+            elem.remove_class('non-occupied')
+            # Plays that move in the game object
+            game.play(best_move)
+            js.console.log(f'{game.board}   |   {game.get_state()}')
+            # Checks if game is over
+            if game.get_state() != None:
+                game_over()
+
+
         def clicked_cell(cell:str):
             # Checks if game is over
             if game.get_state() != None: return
@@ -155,6 +187,7 @@
 
             # Changes content of the cell
             elem.element.innerText = game.turn
+            js.console.log('changed?')
             # Removes the "non-occupied" class
             elem.remove_class('non-occupied')
             # Plays the turn ingame
@@ -164,9 +197,13 @@
             # Checks if game is over
             if game.get_state() != None:
                 game_over()
+            # If it isnt, bot plays its move
+            else:
+                bot_move()
+
         
 
-        restart()
+        initialise()
 
     </py-script>
 </head>
@@ -175,7 +212,7 @@
 <body>
     <div class="gameboard-parent">
         <div class="gameboard">
-            <div class="cell non-occupied" id="c1" py-click="clicked_cell('c1')"></div>
+            <div class="cell non-occupied" id="c1" py-click="clicked_cell('c1')">X</div>
             <div class="cell non-occupied" id="c2" py-click="clicked_cell('c2')"></div>
             <div class="cell non-occupied" id="c3" py-click="clicked_cell('c3')"></div>
             <div class="cell non-occupied" id="c4" py-click="clicked_cell('c4')"></div>
