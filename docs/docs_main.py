@@ -168,5 +168,3 @@ class TicTacToe:
             self.board[cell] = player
             self.turn = 'O' if self.turn=='X' else 'X'
 
-
-

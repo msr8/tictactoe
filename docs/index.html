@@ -19,13 +19,16 @@
             justify-content: center;
         } */
         .gameboard-parent {
+            /* background-color: rgba(0,255,0, 0.1); */
             height: 80vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
         }
         .gameboard {
+            /* background-color: rgba(255,0,0, 0.1); */
             display: grid;
+            container-type: inline-size; /* Need to put this here so that the container query in .cell knows to query .gameboard, else it queries the width of .gameboard-parent */
 	        grid-template: repeat(3, 1fr) / repeat(3, 1fr);
             min-width: 30vw;
             min-height: 30vw;
@@ -37,7 +40,7 @@
         }
         .cell {
             font-size: 30;
-            font-size: 6cqw;
+            font-size: 19cqw;
             font-family: Comfortaa;
             font-weight: 300;
             border-color: white;
@@ -57,33 +60,44 @@
 
         /* Remove all the outlier borders */
         #c1 {
+            border-color: gray;
             border-top-width: 0px;
             border-left-width: 0px;
             border-top-left-radius: 0px;
         }
         #c2 {
+            border-color: gray;
             border-top-width: 0px;
         }
         #c3 {
+            border-color: gray;
             border-top-width: 0px;
             border-right-width: 0px;
             border-top-right-radius: 0px;
         }
         #c4 {
+            border-color: gray;
             border-left-width: 0px;
         }
+        #c5 {
+            border-color: gray;
+        }
         #c6 {
+            border-color: gray;
             border-right-width: 0px;
         }
         #c7 {
+            border-color: gray;
             border-bottom-width: 0px;
             border-left-width: 0px;
             border-bottom-left-radius: 0px;
         }
         #c8 {
+            border-color: gray;
             border-bottom-width: 0px;
         }
         #c9 {
+            border-color: gray;
             border-bottom-width: 0px;
             border-right-width: 0px;
             border-bottom-right-radius: 0px;
