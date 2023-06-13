@@ -3,48 +3,88 @@
 <head>
     <meta name="darkreader-lock">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Comfortaa:300">
     <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css"/>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway:100|Raleway:500">
+    <link rel="stylesheet" href="https://www.nerdfonts.com/assets/css/webfont.css"/>
     <script defer src="https://pyscript.net/latest/pyscript.js"></script> 
 
     <style>
+        :root {
+            --bg-color:      #181a1b;
+            --winner-weight: 500;
+        }
+
         html {
-            background-color: #181a1b;
+            background-color: var(--bg-color);
             color: white;
         }
-        /* body {
-            height: 100vh;
+
+        .bottom-top-bar {
+            height: 15%;
+            background-color: rgba(0,0,255, 0.1);
+            container-type: inline-size;
             display: flex;
-            flex-direction: column;
             justify-content: center;
-        } */
+            align-items: center;
+
+        }
+        .restart-button {
+            color: var(--bg-color);
+            height: 80%;
+            font-size: 8cqh;
+            border-radius: 1cqh;
+            padding-right: 5px;
+            padding-left: 5px;
+            background-color: aqua;
+            display: flex;
+            align-items: center;
+        }
+
+        .bottom-bottom-bar {
+            height: 5%;
+            container-type: inline-size; /* Need to put this here so that the container query in .github-icon knows to query .bottom-bottom-bar, else it queries the height of the entire doc */
+            /* background-color: rgba(0,255,255, 0.1); */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .github-icon {
+            /* background-color: rgba(255,0,255, 0.4); */
+            font-size: 3cqh;
+            margin-right: 5px;
+            margin-left: 5px;
+        }
+
         .gameboard-parent {
             /* background-color: rgba(0,255,0, 0.1); */
-            height: 80vh;
+            height: 80%;
+            /* margin: 0; */
             display: flex;
             flex-direction: column;
             justify-content: center;
         }
         .gameboard {
-            /* background-color: rgba(255,0,0, 0.1); */
+            /* background-color: rgba(255,0,0, 0.4); */
             display: grid;
-            container-type: inline-size; /* Need to put this here so that the container query in .cell knows to query .gameboard, else it queries the width of .gameboard-parent */
+            container-type: inline-size; /* Need to put this here so that the container query in .cell knows to query .gameboard, else it queries the width of the entire doc */
 	        grid-template: repeat(3, 1fr) / repeat(3, 1fr);
-            min-width: 30vw;
-            min-height: 30vw;
-            max-width: 95vw;
-            max-height: 95vw;
+            min-width: 30%;
+            min-height: 30%;
+            max-width: 95%;
+            max-height: 95%;
             width: 400px;
             height: 400px;
-            margin: 0 auto; /*To horizontally center the grid on the page */
+            margin: 0 auto; /*To horizontally center the gameboard grid on the page */
         }
         .cell {
             font-size: 30;
             font-size: 19cqw;
             font-family: Comfortaa;
             font-weight: 300;
-            border-color: white;
-            border-width: 3px;
+            font-family: Raleway;
+            font-weight: 100;
+            border-color: gray;
+            border-width: 2px;
             border-style: solid;
             /* Centers the CONTENTS vertically and horizontally */
             display: flex;
@@ -53,51 +93,40 @@
         }
 
         /* color classes */
-        .winner { color: green; }
+        .winner { color: green; font-weight: var(--winner-weight); }
         .non-occupied:hover {
             background-color: rgba(255,255,255, 0.3);
         }
 
         /* Remove all the outlier borders */
         #c1 {
-            border-color: gray;
             border-top-width: 0px;
             border-left-width: 0px;
             border-top-left-radius: 0px;
         }
         #c2 {
-            border-color: gray;
             border-top-width: 0px;
         }
         #c3 {
-            border-color: gray;
             border-top-width: 0px;
             border-right-width: 0px;
             border-top-right-radius: 0px;
         }
         #c4 {
-            border-color: gray;
             border-left-width: 0px;
         }
-        #c5 {
-            border-color: gray;
-        }
         #c6 {
-            border-color: gray;
             border-right-width: 0px;
         }
         #c7 {
-            border-color: gray;
             border-bottom-width: 0px;
             border-left-width: 0px;
             border-bottom-left-radius: 0px;
         }
         #c8 {
-            border-color: gray;
             border-bottom-width: 0px;
         }
         #c9 {
-            border-color: gray;
             border-bottom-width: 0px;
             border-right-width: 0px;
             border-bottom-right-radius: 0px;
@@ -114,12 +143,30 @@
 
     <py-script>
         from docs_main import TicTacToe
+        from urllib.parse import parse_qsl
         import json
 
+        def load_mode():
+            qs   = js.location.search[1:]
+            mode = dict(parse_qsl(qs)).get('mode')
+            mode = mode if mode in ('pl-vs-pl', 'ai-vs-pl') else 'pl-vs-ai'
+            return mode
+
         def initialise():
+            '''
+            3 modes:
+            pl-vs-pl: 2 player
+            pl-vs-ai: Player moves first (default)
+            ai-vs-pl: AI moves first
+            '''
+            # Loads cache
             global cache
             with open('cache.json') as f:
                 cache = json.load(f)
+            # Loads the mode
+            global mode
+            mode = load_mode()
+            js.console.log(f'mode: {mode}')
             restart()
 
         def restart():
@@ -133,6 +180,8 @@
                 elem.remove_class('winner')
 
             js.console.log(f'Starting game {game.board}')
+            if mode == 'ai-vs-pl':
+                bot_move()
             
     
         def game_over():
@@ -202,7 +251,6 @@
 
             # Changes content of the cell
             elem.element.innerText = game.turn
-            js.console.log('changed?')
             # Removes the "non-occupied" class
             elem.remove_class('non-occupied')
             # Plays the turn ingame
@@ -212,8 +260,8 @@
             # Checks if game is over
             if game.get_state() != None:
                 game_over()
-            # If it isnt, bot plays its move
-            else:
+            # If it isnt, and the mode isnt 2P, bot plays its move
+            elif mode != 'pl-vs-pl':
                 bot_move()
 
         
@@ -227,8 +275,8 @@
 <body>
     <div class="gameboard-parent">
         <div class="gameboard">
-            <div class="cell non-occupied" id="c1" py-click="clicked_cell('c1')">X</div>
-            <div class="cell non-occupied" id="c2" py-click="clicked_cell('c2')"></div>
+            <div class="cell non-occupied winner" id="c1" py-click="clicked_cell('c1')">X</div>
+            <div class="cell non-occupied" id="c2" py-click="clicked_cell('c2')">O</div>
             <div class="cell non-occupied" id="c3" py-click="clicked_cell('c3')"></div>
             <div class="cell non-occupied" id="c4" py-click="clicked_cell('c4')"></div>
             <div class="cell non-occupied" id="c5" py-click="clicked_cell('c5')"></div>
@@ -239,7 +287,15 @@
         </div>
     </div>
 
-    <button py-click="restart()">Restart</button>
+    <div class="bottom-top-bar">
+        <div class="restart-button nf nf-md-refresh" py-click="restart()"></div>
+    </div>
+
+    <div class="bottom-bottom-bar">
+        <div class="nf nf-cod-github github-icon"></div>
+        <div class="nf nf-fa-github github-icon"></div>
+        <div class="nf nf-cod-github_alt github-icon"></div>
+    </div>
 </body>
 
 
