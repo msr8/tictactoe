@@ -4,8 +4,8 @@
     --icon-fg-color: rgb(128,128,128);
     --winner-weight: 500;
     --top-height:    7%;
-    /* --bottom-height: 8%; */
-    --bottom-height: 5%;
+    --bottom-height: 8%;
+    /* --bottom-height: 5%; */
 }
 
 html {
@@ -51,7 +51,8 @@ html {
 .mode:hover {
     color: var(--bg-color);
     background-color: var(--icon-fg-color);
-    border-color: rgb(128,128,128);
+    /* border-color: rgb(128,128,128); */
+    /* border-color: rgb(255,255,255); */
 }
 .selected-mode {
     color: var(--bg-color);
@@ -82,8 +83,8 @@ html {
 .github-icon {
     /* background-color: rgba(255,0,255, 0.4); */
     color: var(--fg-color);
-    /* font-size: 5cqh; */
-    font-size: 3cqh;
+    font-size: 5cqh;
+    /* font-size: 3cqh; */
     margin-right: 5px;
     margin-left: 5px;
 }

@@ -44,6 +44,7 @@
             global mode
             mode = load_mode()
             js.console.log(f'mode: {mode}')
+            Element(mode).add_class('selected-mode')
             restart()
 
         def restart():
@@ -148,7 +149,7 @@
             if mode == new_mode:
                 return
             # If it wasn't, changes the mode, does UI changes, and restarts
-            print(f'Mode changed to {new_mode}')
+            js.console.log(f'Mode changed to {new_mode}')
             Element(mode).remove_class('selected-mode')
             Element(new_mode).add_class('selected-mode')
             mode = new_mode
@@ -164,17 +165,17 @@
 <body>
     <div class="top-bar">
         <div class="modes-parent">
-            <div id="pl-vs-pl" py-click="change_mode('pl-vs-pl')" class="mode"><i class="nf nf-fa-user"></i>-<i class="nf nf-fa-user"></i></div>
-            <div id="pl-vs-ai" py-click="change_mode('pl-vs-ai')" class="mode selected-mode"><i class="nf nf-fa-user"></i>-AI</div>
-            <div id="ai-vs-pl" py-click="change_mode('ai-vs-pl')" class="mode">AI-<i class="nf nf-fa-user"></i></div>
+            <div id="pl-vs-pl" py-click="change_mode('pl-vs-pl')" class="mode"> <i class="nf nf-fa-user"></i>-<i class="nf nf-fa-user"></i> </div>
+            <div id="pl-vs-ai" py-click="change_mode('pl-vs-ai')" class="mode"> <i class="nf nf-fa-user"></i>-<i class="nf nf-oct-cpu"></i> </div>
+            <div id="ai-vs-pl" py-click="change_mode('ai-vs-pl')" class="mode"> <i class="nf nf-oct-cpu"></i>-<i class="nf nf-fa-user"></i> </div>
         </div>
         <div class="restart-button nf nf-md-refresh" py-click="restart()"></div>
     </div>
 
     <div class="gameboard-parent">
         <div class="gameboard">
-            <div class="cell non-occupied winner" id="c1" py-click="clicked_cell('c1')">X</div>
-            <div class="cell non-occupied" id="c2" py-click="clicked_cell('c2')">O</div>
+            <div class="cell non-occupied" id="c1" py-click="clicked_cell('c1')"></div>
+            <div class="cell non-occupied" id="c2" py-click="clicked_cell('c2')"></div>
             <div class="cell non-occupied" id="c3" py-click="clicked_cell('c3')"></div>
             <div class="cell non-occupied" id="c4" py-click="clicked_cell('c4')"></div>
             <div class="cell non-occupied" id="c5" py-click="clicked_cell('c5')"></div>
@@ -186,9 +187,11 @@
     </div>
 
     <div class="bottom-bar">
-        <div class="nf nf-cod-github github-icon"></div>
-        <div class="nf nf-fa-github github-icon"></div>
-        <div class="nf nf-cod-github_alt github-icon"></div>
+        <a href="https://github.com/msr8/tictactoe" target="_blank">
+            <div class="nf nf-cod-github github-icon"></div>
+            <!-- <div class="nf nf-fa-github github-icon"></div> -->
+            <!-- <div class="nf nf-cod-github_alt github-icon"></div> -->
+        </a>
     </div>
 </body>
 
