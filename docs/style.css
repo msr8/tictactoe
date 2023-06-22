@@ -165,3 +165,6 @@ html {
     border-right-width: 0px;
     border-bottom-right-radius: 0px;
 }
+
+/* Remove underlines in links (ie the github icon) */
+a {text-decoration: none; color:var(--fg-color);}
