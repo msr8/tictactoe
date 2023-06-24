@@ -1,5 +1,7 @@
+@import url('https://msr8.github.io/style.css');
+@import url('https://fonts.googleapis.com/css?family=Raleway:200|Raleway:500');
+
 :root {
-    --bg-color:      #181a1b;
     --fg-color:      #ffffff;
     --icon-fg-color: rgb(128,128,128);
     --winner-weight: 500;
@@ -116,7 +118,7 @@ html {
     font-family: Comfortaa;
     font-weight: 300;
     font-family: Raleway;
-    font-weight: 100;
+    font-weight: 200;
     border-color: gray;
     border-width: 2px;
     border-style: solid;
