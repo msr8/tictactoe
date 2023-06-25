@@ -7,7 +7,7 @@
 
 <br>
 
-This is a simple tictactoe AI bot made using the minimax algorithm which can be played against [here](https://msr8.github.io/tictactoe). There are 3 available modes:
+This is a simple tictactoe AI bot made in python/pyscript using the minimax algorithm which can be played against [here](https://msr8.github.io/tictactoe). There are 3 available modes:
 
 - **Player VS Player:** No bot involved
 - **Player VS AI:** Player moves first
