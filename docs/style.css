@@ -2,7 +2,6 @@
 @import url('https://fonts.googleapis.com/css?family=Raleway:200|Raleway:500&display=swap');
 
 :root {
-    --fg-color:      #ffffff;
     --icon-fg-color: rgb(128,128,128);
     --winner-weight: 500;
     --top-height:    7%;
