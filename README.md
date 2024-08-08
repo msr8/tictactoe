@@ -14,3 +14,7 @@ This is a simple tictactoe AI made in python/pyscript using the minimax algorith
 - **AI VS Player:** Bot moves first
 
 Made this project to try my hand at pyscript as well as the minimax algorithm
+
+- Engineered a TicTacToe AI implementing the ***minimax algorithm*** for optimal decision-making
+- Streamlined the development process by utilizing ***PyScript***, eliminating the need for a conventional frontend-backend separation
+- Deployed and showcased the project on ***GitHub Pages***
